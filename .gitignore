@@ -209,3 +209,10 @@ po/*~
 
 # RStudio Connect folder
 rsconnect/
+
+/.idea/
+/data/processed/artist_track_genres.csv
+/data/processed/kg_artist_track_genres.graphml
+/data/processed/tracks_with_features.csv
+/data/raw/acoustic_features_lfm_id.tsv
+/data/raw/artist_track_genres.txt
