@@ -709,28 +709,6 @@
       ],
       "Hash": "99df65cfef20e525ed38c3d2577f7190"
     },
-    "igraph": {
-      "Package": "igraph",
-      "Version": "1.5.1",
-      "Source": "Repository",
-      "Repository": "CRAN",
-      "Requirements": [
-        "Matrix",
-        "R",
-        "cli",
-        "cpp11",
-        "grDevices",
-        "graphics",
-        "lifecycle",
-        "magrittr",
-        "methods",
-        "pkgconfig",
-        "rlang",
-        "stats",
-        "utils"
-      ],
-      "Hash": "80401cb5ec513e8ddc56764d03f63669"
-    },
     "isoband": {
       "Package": "isoband",
       "Version": "0.2.7",
@@ -741,6 +719,17 @@
         "utils"
       ],
       "Hash": "0080607b4a1a7b28979aecef976d8bc2"
+    },
+    "iterators": {
+      "Package": "iterators",
+      "Version": "1.0.14",
+      "Source": "Repository",
+      "Repository": "RSPM",
+      "Requirements": [
+        "R",
+        "utils"
+      ],
+      "Hash": "8954069286b4b2b0d023d1b288dce978"
     },
     "jquerylib": {
       "Package": "jquerylib",

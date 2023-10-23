@@ -192,44 +192,6 @@ A knowledge graph of artists, tracks, and genres.
 | `type`       | Vertex | Type of the vertex; values: `[artist|track|genre]`                                                                              | --                                                 |
 | `id`         | Vertex | A generic ID assigned by igraph during export to graphml; carries no domain-information.                                        | `n24237`                                           |
 
-### `data/processed/les_with_playcounts.csv`
+### User profiles
 
-#### Provenance
-
-Again, an inner join of the gigantic LFM-1b `les.txt` with `tracks_with_features.csv` from above.
-`les.txt` contains 1 billion listening events from users of LastFM ([resource](http://www.cp.jku.at/datasets/LFM-1b/)).
-By joining with the preprocessed dataset, we retain all listening events of
-tracks that we have adequate features for.
-
-**Note**: this of course means that users' histories are mangled, as tracks can
-have been removed. This definitely reduces the history-size for the users
-included in the data.
-
-##### Removing outliers
-
-We removed users appearing as outliers in terms of unique tracks they listened
-to. A user may be an outlier if they appear only a few times in the data, or if
-they are overrepresented (e.g., LastFM radio stations).
-
-We decided to use median absolute deviation (MAD,
-[paper](doi.org/10.1016/j.jesp.2013.03.013)) for determining if an item is an
-outlier, with a rejection coefficient of 3 ("very conservative"). This follows
-the approach of [Zangerle et al.](https://transactions.ismir.net/articles/10.5334/tismir.37).
-
-
-##### Sampling
-
-After removing outliers, we sample 1000 users that have listened to between 100
-and 500 tracks (limits inclusive).
-
-#### Description
-
-The field `n`, containing play counts of this track for this user, can be used
-to turn implicit ratings to explicit, numeric ratings, e.g., using min-max
-normalization as done in [Kowald et al., 2021](https://doi.org/10.1140/epjds/s13688-021-00268-9).
-
-| Field      | Description                                                                      | Example                  |
-|------------|----------------------------------------------------------------------------------|--------------------------|
-| `uid`      | The unique LastFM user-id                                                        | `32279421`               |
-| `compound` | All IDs referring to a single track the user listened to (see above)             | `29459226_1404_15677949` |
-| `n`        | The number of times the user appears listening to this track in the cleaned data | `7`                      |
+TODO: fill this section with better description of user profiles.

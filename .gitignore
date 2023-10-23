@@ -216,3 +216,5 @@ rsconnect/
 /data/processed/tracks_with_features.csv
 /data/raw/acoustic_features_lfm_id.tsv
 /data/raw/artist_track_genres.txt
+/data/processed/les_with_num_tracks_listened.csv
+/data/processed/les_with_playcounts.csv
