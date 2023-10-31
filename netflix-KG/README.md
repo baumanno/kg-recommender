@@ -1,6 +1,6 @@
 # Netflix Knowledge Graph
 
-Generates a KG from the netflix catalog obrained from [kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows) (As of Oct. 2023).
+Generates a KG from the netflix catalog obtained from [kaggle](https://www.kaggle.com/datasets/shivamb/netflix-shows) (As of Oct. 2023).
 
 ## Instructions:
 
