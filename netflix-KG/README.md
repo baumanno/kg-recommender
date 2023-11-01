@@ -16,7 +16,7 @@ The KG will be available in the *data/processed* directory, both in Turtle (*.tt
 
 ### 2. Generating random user profiles:
 
-Two parameters are required. The amount of user profiles to be generated, a minimum and a maximum of entries that will be randomly generated per user. Below we generate 88 user profiles, with a minumum of 5 entries and a maximum of 55 entries.
+Two parameters are required. The amount of user profiles to be generated, a minimum and a maximum of entries that will be randomly generated per user. Below we generate 88 user profiles, with a minimum of 5 entries and a maximum of 55 entries.
 
 ```bash
 $ cd code/
