@@ -1,4 +1,7 @@
 library(tidyverse)
+library(itertools)
+library(foreach)
+library(doParallel)
 
 # Setup -------------------------------------------------------------------
 
@@ -10,18 +13,9 @@ here::i_am("code/01_preprocessing/04_user_profiles.R")
 
 tracks_features <- read_csv(here::here("data/processed/tracks_with_features.csv"))
 
-les <- read_tsv(
-  here::here("data/raw/LFM_1b_LEs.txt.xz"),
-  n_max = 1E6,
-  col_names = c("userid", "aid", "albid", "tid", "timestamp"),
-  col_types = "ccccc",
-  col_select = c(-albid)
-)
-
 # Glimpse data ------------------------------------------------------------
 
 glimpse(tracks_features)
-glimpse(les)
 
 # Wrangle data ------------------------------------------------------------
 
@@ -30,6 +24,50 @@ tracks <- tracks_features |>
   separate_longer_delim(compound, "_") |>
   rename(track_id = compound) |>
   select(grouper, track_id)
+tracks |> write_csv(here::here("data/tmp/trackids_with_features.csv"))
+track_ids <- pull(tracks, "track_id")
+chunksize <- 1e5
+
+f <- file(here::here("data/raw/LFM_1b_LEs.txt"), open = "rt")
+it <- enumerate(ichunk(f, chunkSize = chunksize))
+# purrr::map(it, \(x) joiner(x, tracks = track_ids))
+# the_df <- lapply(it, \(x) joiner(x, tracks = track_ids))
+filepath <- here::here("data/tmp/les/")
+
+foreach::foreach(
+  thing = it,
+  .packages = c("dplyr", "readr"),
+  .inorder = FALSE,
+  .noexport = c("tid", "albid"),
+  .export = c("track_ids", "filepath"),
+  .combine = c,
+  .multicombine = TRUE
+  ) %do% {
+  # joiner(thing$index, thing$value, tracks = track_ids, path = filepath)
+  # print("hello")
+  cat("test", file = "/tmp/test")
+  
+  filename <- paste0(filepath,"les_", thing$index, ".csv")
+  # 
+  thing$value |>
+    paste(collapse = "\n") |>
+    readr::read_tsv(
+      col_names = c("userid", "aid", "albid", "tid", "timestamp"),
+      col_types = "ccccc",
+      col_select = c(-albid)
+    ) |>
+    dplyr::filter(tid %in% track_ids) |>
+    readr::write_csv(file = filename)
+
+  return(NULL)
+  # print("done")
+  # flush.console()
+}
+close(f); rm(f); rm(it); gc()
+
+les <- vroom::vroom(here::here("data/raw/LFM_1b_LEs.txt.xz"), n_max = 1e5,       col_names = c("userid", "aid", "albid", "tid", "timestamp"),
+                    col_types = "ccccc",
+                    col_select = c(-albid))
 
 les <- les |>
   distinct()
