@@ -218,3 +218,8 @@ rsconnect/
 /data/raw/artist_track_genres.txt
 /data/processed/les_with_num_tracks_listened.csv
 /data/processed/les_with_playcounts.csv
+/data/processed/les_tracks_with_features.csv
+/data/processed/total_tracks_per_user.csv
+/data/processed/user_playcounts.csv
+/data/raw/LFM_1b_LEs.txt.xz
+/data/tmp/
