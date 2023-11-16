@@ -2,6 +2,21 @@
 
 ## Getting started
 
+### Essentials
+
+#### Git LFS
+
+This repo stores large files using Git LFS. This is a git-extension you must install
+on your local machine in order to access the files.
+
+Official instructions are available [here](https://git-lfs.com/). 
+
+LFS is currently configured (via `.gitattributes`) to track all and any files ending
+in **.xz**. This currently targets all our data-dumps. If you wish to track other
+large files, simply issue `git lfs track "*.ext"` for the respective extensions.
+
+### Makefile
+
 The `Makefile` provides several useful targets, see them all by running `make`
 without arguments in your terminal:
 
