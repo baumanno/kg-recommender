@@ -7,22 +7,20 @@ script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" &>/dev/null && pwd -P)
 
 usage() {
   cat <<EOF
-Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] INDIR TOTALTRACKS PLAYCOUNTS
+Usage: $(basename "${BASH_SOURCE[0]}") [-h] [-v] INDIR TOTALTRACKS
 
-Tabulate playcounts and distinct tracks.
+Tabulate distinct tracks.
 
-Playcounts are per user per track, i.e., how many times a user listened to a track.
 Distinct tracks are per user, i.e., how many distinct tracks did a user listen to.
 
 This script reads all files in INDIR, and distributes them to an AWK-script via
-GNU parallel. The distinct track counts are written to TOTALTRACKS, and the
-per-user-playcounts to PLAYCOUNTS.
+GNU parallel. The distinct track counts are written to TOTALTRACKS for subsequent
+sampling..
 
 Required arguments:
 
 INDIR         Directory containing the per-user tracklists (see 03_tracks_per_user.sh)
 TOTALTRACKS   Path to the CSV-file to write the distinct track-counts to.
-PLAYCOUNTS    Path to the CSV-file to write the per-user playcounts to.
 
 Available options:
 
@@ -73,7 +71,7 @@ parse_params() {
   args=("$@")
 
   # check required params and arguments
-  [[ ${#args[@]} -lt 2 ]] && die "Missing script arguments: INDIR, OUTFILE required"
+  [[ ${#args[@]} -lt 2 ]] && die "Missing script arguments: INDIR, TOTALTRACKS required"
 
   return 0
 }
@@ -82,7 +80,6 @@ run() {
   msg "${RED}Read arguments:${NOFORMAT}"
   msg "- INDIR: ${args[0]}"
   msg "- TOTALTRACKS: ${args[1]}"
-  msg "- PLAYCOUNTS: ${args[2]}"
   
   msg "${GREEN}Running tabulation...${NOFORMAT}"
   msg "${YELLOW}This may take a while, grab a beverage.${NOFORMAT}"
@@ -104,10 +101,6 @@ NR>1 {
     tcount[$2] += 1;
 }
 END {
-    for (t in tcount) {
-        print $1, t, tcount[t] >> "'${args[2]}'";
-    }
-
     print $1, length(tcount) >> "'${args[1]}'";
 }'
     

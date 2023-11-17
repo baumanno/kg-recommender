@@ -46,8 +46,7 @@ $(DATADIR)/tmp/per_user_counts/: $(DATADIR)/tmp/trackids_with_features.csv $(DAT
 tabulate: $(DATADIR)/tmp/per_user_counts/ ## Aggregate per-user totals and per-user per-track playcounts
 	./04_tabulate_counts.sh \
 		$(DATADIR)/tmp/per_user_counts \
-		$(DATADIR)/processed/total_tracks_per_user.csv \
-		$(DATADIR)/processed/user_playcounts.csv
+		$(DATADIR)/processed/total_tracks_per_user.csv
 
 .PHONY: clean
 clean: ## Run cleanup routines
