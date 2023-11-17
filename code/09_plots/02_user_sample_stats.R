@@ -40,3 +40,27 @@ ps <- hs + bs + plot_annotation(
 )
 
 ggsave(filename = here::here("viz/users/02_user_sample_stats.pdf"), ps, height = 4, width = 6)
+
+features <- read_csv(here::here("data/processed/tracks_with_features.csv"))
+
+df_sampled <- read_csv(here::here("data/processed/user_sample_playcounts.csv"), col_types = "ccd")
+
+feats <- df_sampled |> 
+  group_by(uid) |> 
+  nest(data = compound:count) |> 
+  ungroup() |> 
+  slice_sample(n = 3) |>
+  unnest(data) |> 
+  left_join(features, by = join_by(compound)) |> 
+  pivot_longer(danceability:tempo, names_to = "feature") |> 
+  ggplot() +
+  geom_boxplot(aes(x = feature, y = value, fill = uid), outlier.alpha = .2, alpha = .6, colour = "#666666") +
+  coord_flip() +
+  scale_fill_brewer(type = "qual", palette = "Dark2") +
+  ylab("feature name") +
+  plot_annotation(
+    title = "Feature distribution for sample of users",
+    caption = "All values normalized to [0,1]"
+  )
+
+ggsave(filename = here::here("viz/users/03_subsampled_feature_comparison.pdf"), feats, height = 4, width = 6, dpi = 300)
