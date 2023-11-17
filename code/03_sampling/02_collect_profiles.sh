@@ -19,6 +19,13 @@ is read, and the tracks therein are tabulated to arrive at per-track playounts.
 
 These profiles are then written to OUTFILE.
 
+EXAMPLE:
+
+  ./02_collect_profiles.sh \
+    ../../data/processed/user_sample.csv \
+    ../../data/tmp/per_user_counts/ \
+    ../../data/processed/user_sample_playcounts.csv
+
 Required arguments:
 
 USERS       Path to the CSV-file containing the users.

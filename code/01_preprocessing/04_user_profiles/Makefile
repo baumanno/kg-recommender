@@ -29,17 +29,17 @@ DATADIR:=../../../data
 $(DATADIR)/tmp/trackids_with_features.csv: ## Create the mapping of single-ID to compound
 	Rscript ./01_write_track_ids.R
 
-$(DATADIR)/processed/les_tracks_with_features.csv: $(DATADIR)/tmp/trackids_with_features.csv ## Keep all listening events on tracks for which features exist
+$(DATADIR)/tmp/les_tracks_with_features.csv: $(DATADIR)/tmp/trackids_with_features.csv ## Keep all listening events on tracks for which features exist
 	./02_filter_les.sh \
 		$(DATADIR)/raw/LFM_1b_LEs.txt.xz \
 		$(DATADIR)/tmp/trackids_with_features.csv \
-		$(DATADIR)/processed/les_tracks_with_features.csv
+		$(DATADIR)/tmp/les_tracks_with_features.csv
 
-$(DATADIR)/tmp/per_user_counts/: $(DATADIR)/tmp/trackids_with_features.csv $(DATADIR)/processed/les_tracks_with_features.csv ## Extract profiles with only the tracks for which features exist
+$(DATADIR)/tmp/per_user_counts/: $(DATADIR)/tmp/trackids_with_features.csv $(DATADIR)/tmp/les_tracks_with_features.csv ## Extract profiles with only the tracks for which features exist
 	mkdir -p $(DATADIR)/tmp/per_user_counts
 	./03_tracks_per_user.sh \
 		$(DATADIR)/tmp/trackids_with_features.csv \
-		$(DATADIR)/processed/les_tracks_with_features.csv \
+		$(DATADIR)/tmp/les_tracks_with_features.csv \
 		$(DATADIR)/tmp/per_user_counts
 
 .PHONY: tabulate
