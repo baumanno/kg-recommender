@@ -9,7 +9,7 @@
 This repo stores large files using Git LFS. This is a git-extension you must install
 on your local machine in order to access the files.
 
-Official instructions are available [here](https://git-lfs.com/). 
+Official instructions are available [here](https://git-lfs.com/).
 
 LFS is currently configured (via `.gitattributes`) to track all and any files ending
 in **.xz**. This currently targets all our data-dumps. If you wish to track other
@@ -209,4 +209,84 @@ A knowledge graph of artists, tracks, and genres.
 
 ### User profiles
 
-TODO: fill this section with better description of user profiles.
+### `data/processed/total_tracks_per_user.csv`
+
+#### Provenance
+
+Built from the following data using
+`code/01_preprocessing/04_user_profiles/04_tabulate_counts.sh`:
+* temporary, per-user counts in `data/tmp/per_user_counts` (not tracked in Git)
+
+(check `code/01_preprocessing/04_user_profiles/Makefile` for better overview of
+the pipeline)
+
+#### Description
+
+Number of distinct tracks a user has listened to.
+**Note 1:** file has no column header; implied names are in parentheses.
+**Note 2:** the listening histories have been filtered against tracks for which
+we have features.
+
+| Field     | Description                                               |
+|-----------|-----------------------------------------------------------|
+| `(uid)`   | The user-ID                                               |
+| `(count)` | The number of distinct tracks from the listening history. |
+
+### `data/processed/user_sample.csv`
+
+#### Provenance
+
+Built from the following data using `code/03_sampling/01_sample_users.R`:
+* `data/processed/total_tracks_per_user.csv`
+
+#### Description
+
+A sample of 150 users. 25 users each were sampled from the first and fourth
+quartile; 100 users were sampled from the central quartile:
+* 25 users from [0, 25]-percentile,
+* 50 users from [25, 75]-percentile,
+* 25 users from [75, 100]-percentile
+
+Proceeding in this way, we ensure a majority of samples are from the "middle
+ground", while still including outliers.
+
+| Field   | Description                                        |
+|---------|----------------------------------------------------|
+| `uid`   | The user-ID                                        |
+| `count` | The number of distinct tracks the user listened to |
+
+### `data/processed/user_sample_playcounts.csv`
+
+#### Provenance
+
+Built from the following data using `code/03_sampling/02_collect_profiles.sh`:
+* `data/processed/user_sample.csv`
+* `data/tmp/per_user_counts` (not tracked in Git)
+
+#### Description
+
+| Field      | Description                                    |
+|------------|------------------------------------------------|
+| `uid`      | The user-ID                                    |
+| `compound` | The compound-ID for the track                  |
+| `count`    | The number of times the user played this track |
+
+### `data/processed/user_sample_normalized_playcounts.csv`
+
+#### Provenance
+
+Built from the following data using `code/04_scoring/01_normalize_playcounts.R`:
+* `data/processed/user_sample_playcounts.csv`
+
+#### Description
+
+The same as above, with an additional column for the min-max-normalized
+playcount. Min-max-normalization was performed for the range [1, 1000].
+Essentially, this turns implicit events ("listens") into an explicit rating.
+
+| Field      | Description                                             |
+|------------|---------------------------------------------------------|
+| `uid`      | The user-ID                                             |
+| `compound` | The compound-ID for the track                           |
+| `count`    | The number of times the user played this track          |
+| `score`    | The min-max scaled playcount (`count`) (into [1, 1000]) |
