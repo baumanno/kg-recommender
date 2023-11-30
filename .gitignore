@@ -211,15 +211,22 @@ po/*~
 rsconnect/
 
 /.idea/
-/data/processed/artist_track_genres.csv
-/data/processed/kg_artist_track_genres.graphml
-/data/processed/tracks_with_features.csv
-/data/raw/acoustic_features_lfm_id.tsv
-/data/raw/artist_track_genres.txt
-/data/processed/les_with_num_tracks_listened.csv
-/data/processed/les_with_playcounts.csv
-/data/processed/les_tracks_with_features.csv
-/data/processed/total_tracks_per_user.csv
-/data/processed/user_playcounts.csv
-/data/raw/LFM_1b_LEs.txt.xz
-/data/tmp/
+
+# ignore raw data
+lastfm-KG/data/raw/acoustic_features_lfm_id.tsv
+lastfm-KG/data/raw/artist_track_genres.txt
+lastfm-KG/data/raw/LFM_1b_LEs.txt.xz
+
+# ignore the uncompressed processed files
+lastfm-KG/data/processed/*.csv
+lastfm-KG/data/processed/*.ttl
+lastfm-KG/data/processed/recos/
+lastfm-KG/data/processed/subkgs/
+
+# ignore everything in tmp
+lastfm-KG/data/tmp/
+
+# ignore evaluated algorithm
+lastfm-KG/code/02_recos/algo.out
+/lastfm-KG/code/02_recos/.user-recos.sentinel
+/lastfm-KG/code/01_preprocessing/.user-subkgs.sentinel

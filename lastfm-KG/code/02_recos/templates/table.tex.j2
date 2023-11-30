@@ -1,0 +1,17 @@
+\begin{table}
+  \caption{Evaluation of prediction algorithms.}
+  \centering
+  \begin{tabular}{cc}
+  \toprule
+  Algorithm & MAE \\
+  \midrule
+  {% for name, value in data.items() %}
+    {% if name == minim %}
+     \textbf{ {{ name }} } & \textbf{ {{ value|round(2) }} } \\
+    {% else %}
+     {{ name }} & {{ value|round(2) }} \\
+    {% endif %}
+  {% endfor %}
+  \end{tabular}
+  \label{tab:reco-algo-eval}
+\end{table}
