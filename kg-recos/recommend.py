@@ -3,20 +3,19 @@ import os
 from argparse import ArgumentParser
 from rdflib import URIRef
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_multidigraph
-from rdflib.namespace import RDF
+
 from sys import argv
 
 from add_neighbors import addNeighbors
+from config import Config
 from get_recommendables import loadKG, getRecommendables
 
-__APPLICABLE_PREDICATES = {'http://www.netflix.com/nf-schema#acted_in', 'http://www.netflix.com/nf-schema#directed'}
-
-def getApplicableNodes(kg):
+def getApplicableNodes(kg, predicateTypes):
     print('Getting all user-profile nodes ...')
 
     subjects = set()
     objects = set()
-    for p in __APPLICABLE_PREDICATES:
+    for p in predicateTypes:
         for s, o in kg.subject_objects(predicate=URIRef(p)):
             subjects.add(s)
             objects.add(o)
@@ -49,16 +48,21 @@ def main(args):
     catalogKG = loadKG(catalog)
     userProfileKG = loadKG(profile)
 
-    nodes = getApplicableNodes(userProfileKG)
+    cfg = Config()
+    predicateTypes = cfg.getPredicateTypes()
+    recommendableType = URIRef(cfg.getRecommendableType())
+    extraMetadata = cfg.getExtraMetadataTypes()
+
+    nodes = getApplicableNodes(userProfileKG, predicateTypes)
     processed_recommendables = dict()
     for n in nodes:
-        recommendables = getRecommendables(catalogKG, userProfileKG, n)
+        recommendables = getRecommendables(catalogKG, userProfileKG, n, recommendableType)
         for r in recommendables:
             if r in processed_recommendables:
                 print(f'Skipping already-processed {r}')
                 continue
 
-            updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r)
+            updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
             processed_recommendables[r] = extractMetric(updatedUserProfileKG, r, args.metric)
 
     # Sort: More relevant first

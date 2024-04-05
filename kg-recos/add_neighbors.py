@@ -1,7 +1,8 @@
 from argparse import ArgumentParser
 from rdflib import Graph, URIRef
-from rdflib.namespace import RDF, RDFS
 from sys import argv
+
+from config import Config
 
 def loadKG(filename):
     print(f'Loading {filename} as an RDFLib graph ...')
@@ -11,10 +12,10 @@ def loadKG(filename):
 
     return graph
 
-def addExtraMetadata(kg, catalog):
+def addExtraMetadata(kg, catalog, extraMetadata):
     extraTriples = Graph()
-    extraTriples += catalog.triples((None, RDF.type, None))
-    extraTriples += catalog.triples((None, RDFS.label, None))
+    for extra in extraMetadata:
+        extraTriples += catalog.triples((None, extra, None))
 
     for s, p, o in kg.triples((None, None, None)):
          kg += extraTriples.triples((s, None, None))
@@ -22,25 +23,25 @@ def addExtraMetadata(kg, catalog):
          kg += extraTriples.triples((o, None, None))
             
 
-def getNeighbors(catalog, recommendable):
+def getNeighbors(catalog, recommendable, extraMetadata):
     print(f'Gathering {recommendable} neighbors ...')
 
     neighborsKG = Graph()
     neighborsKG += catalog.triples((recommendable, None, None)) # subjects
     neighborsKG += catalog.triples((None, None, recommendable)) # objects
 
-    addExtraMetadata(neighborsKG, catalog)
+    addExtraMetadata(neighborsKG, catalog, extraMetadata)
 
     return neighborsKG
 
-def addNeighbors(catalogKG, userProfileKG, recommendable, saveFile=False):
-    neighborsKG = getNeighbors(catalogKG, recommendable)
+def addNeighbors(catalogKG, userProfileKG, recommendable, extraMetadata, saveFile=False):
+    neighborsKG = getNeighbors(catalogKG, recommendable, extraMetadata)
     
     resultKG = Graph()
     resultKG = userProfileKG + neighborsKG
 
     if saveFile:
-        resultKG.serialize(format="ttl", destination="out.ttl")
+        resultKG.serialize(format="ttl", destination="neighbors.ttl")
 
     return resultKG
 
@@ -66,7 +67,11 @@ def main(args):
     catalogKG = loadKG(catalog)
     userProfileKG = loadKG(profile)
 
-    addNeighbors(catalogKG, userProfileKG, URIRef(args.recommendable), saveFile=True)
+    cfg = Config()
+    extraMetadata = cfg.getExtraMetadataTypes()
+    print(extraMetadata)
+
+    addNeighbors(catalogKG, userProfileKG, URIRef(args.recommendable), extraMetadata, saveFile=True)
 
 if __name__ == '__main__':
     exit(main(argv))

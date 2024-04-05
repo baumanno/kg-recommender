@@ -3,7 +3,7 @@ from rdflib import Graph, URIRef
 from rdflib.namespace import RDF
 from sys import argv
 
-__RECOMMENDABLE_TYPE = 'http://www.netflix.com/nf-schema#Entry'
+from config import Config
 
 def loadKG(filename):
     print(f'Loading {filename} as an RDFLib graph ...')
@@ -13,18 +13,18 @@ def loadKG(filename):
 
     return graph
 
-def getPossibleRecommendables(catalog, profile):
-    recommendables = catalog.subjects(predicate=RDF.type, object=URIRef(__RECOMMENDABLE_TYPE))
-    profile_recommendables = profile.subjects(predicate=RDF.type, object=URIRef(__RECOMMENDABLE_TYPE))
+def getPossibleRecommendables(catalog, profile, recommendableType):
+    recommendables = catalog.subjects(predicate=RDF.type, object=recommendableType)
+    profile_recommendables = profile.subjects(predicate=RDF.type, object=recommendableType)
 
     non_recommendables = [n for n in profile_recommendables]
 
     return [r for r in recommendables if not r in non_recommendables]
 
-def getRecommendables(catalog, profile, start):
+def getRecommendables(catalog, profile, start, recommendableType):
     print(f'Getting recommendables for {start} ...')
 
-    recommendables = getPossibleRecommendables(catalog, profile)
+    recommendables = getPossibleRecommendables(catalog, profile, recommendableType)
 
     subjects = catalog.subjects(predicate=None, object=start)
     subjects = [s for s in subjects if s in recommendables]
@@ -58,10 +58,13 @@ def main(args):
     userProfileKG = loadKG(profile)
 
     startingNode = URIRef(args.node)
+
+    cfg = Config()
+    recommendableType = URIRef(cfg.getRecommendableType())
     
-    recommendable = getRecommendables(catalogKG, userProfileKG, startingNode)
-    print(recommendable)
-    print(len(recommendable))
+    recommendables = getRecommendables(catalogKG, userProfileKG, startingNode, recommendableType)
+    print(recommendables)
+    print(len(recommendables))
 
 if __name__ == '__main__':
     exit(main(argv))
