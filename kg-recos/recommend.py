@@ -3,10 +3,10 @@ import os
 from argparse import ArgumentParser
 from pathlib import Path
 from rdflib import URIRef
-from rdflib.extras.external_graph_libs import rdflib_to_networkx_multidigraph
 from sys import argv
 
 from add_neighbors import addNeighbors
+from compute_metric import computeMetric
 from config import Config
 from get_recommendables import loadKG, getRecommendables
 
@@ -21,17 +21,13 @@ def getApplicableNodes(kg, predicateTypes):
             objects.add(o)
 
     return list(subjects.union(objects))
-
-def extractMetric(kg, node, metric):
-    nx_kg = rdflib_to_networkx_multidigraph(kg)
-    return nx_kg.number_of_nodes()
          
 def main(args):
     arg_p = ArgumentParser('python recommend.py', description='Gets recommendations for an user-profile KG, based on a catalog KG, and a given metric')
     arg_p.add_argument('Catalog', metavar='catalog', type=str, default=None, help='catalog KG file (*.ttl)')
     arg_p.add_argument('Profile', metavar='profile', type=str, default=None, help='user-profile KG file (*.ttl)')
     arg_p.add_argument('-m', '--metric', type=str, default='numnodes', help='Metric for KG-based recommendation')
-    
+
     args = arg_p.parse_args(args[1:])
     catalog = args.Catalog
 
@@ -63,7 +59,7 @@ def main(args):
                 continue
 
             updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
-            processed_recommendables[r] = extractMetric(updatedUserProfileKG, r, args.metric)
+            processed_recommendables[r] = computeMetric(updatedUserProfileKG, r, args.metric)
 
     # Sort: More relevant first
     recos = dict(sorted(processed_recommendables.items(), key=lambda item: item[1], reverse=True))
