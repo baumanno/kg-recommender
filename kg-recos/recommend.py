@@ -1,9 +1,9 @@
 import os
 
 from argparse import ArgumentParser
+from pathlib import Path
 from rdflib import URIRef
 from rdflib.extras.external_graph_libs import rdflib_to_networkx_multidigraph
-
 from sys import argv
 
 from add_neighbors import addNeighbors
@@ -69,9 +69,12 @@ def main(args):
     recos = dict(sorted(processed_recommendables.items(), key=lambda item: item[1], reverse=True))
 
     # Save to file
-    output_filename_wo_extension = os.path.splitext(profile)[0]
-    output_filename = f'recos_{output_filename_wo_extension}_{args.metric}.txt'
-    open(output_filename, 'w').close() # Clean the file in case it exists
+    profile_dir = os.path.dirname(profile)
+    output_dir = os.path.join(profile_dir, 'recos')
+    Path(output_dir).mkdir(parents=True, exist_ok=True) # Create if not exists
+
+    output_filename = os.path.join(output_dir, f'{args.metric}.txt')
+    open(output_filename, 'w').close() # Clean if exists
 
     with open(output_filename, 'a') as output_file:
         for k, v in recos.items():
