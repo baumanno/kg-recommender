@@ -17,6 +17,9 @@ def computeMetric(kg, node, metric):
     if 'closeness' == metric:
         computed = nx.closeness_centrality(nx_kg)
         return computed[node]
+    if 'pagerank' == metric:
+        computed = nx.pagerank(nx_kg)
+        return computed[node]
     if 'in_degree' == metric:
         computed = nx.in_degree_centrality(nx_kg)
         return computed[node]
@@ -32,6 +35,8 @@ def computeMetric(kg, node, metric):
         return nx_kg.number_of_edges()
     if 'numnodes' == metric:
         return nx_kg.number_of_nodes()
+    if 'avg_degree' == metric:
+        return nx_kg.number_of_edges() / nx_kg.number_of_nodes()
 
     raise ValueError('Unsupported metric!')
 
