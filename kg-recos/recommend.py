@@ -23,10 +23,10 @@ def getApplicableNodes(kg, predicateTypes):
     return list(subjects.union(objects))
          
 def main(args):
-    arg_p = ArgumentParser('python recommend.py', description='Gets recommendations for an user-profile KG, based on a catalog KG, and a given metric')
+    arg_p = ArgumentParser('python recommend.py', description='Gets recommendations for user-profile KGs, based on a catalog KG, and a given metric')
+    arg_p.add_argument('-m', '--metrics', type=str, default=None, help='Comma-separated metric list (e.g. \'degree,eigenvector,betweenness\').')
     arg_p.add_argument('Catalog', metavar='catalog', type=str, default=None, help='catalog KG file (*.ttl)')
-    arg_p.add_argument('Profile', metavar='profile', type=str, default=None, help='user-profile KG file (*.ttl)')
-    arg_p.add_argument('-m', '--metric', type=str, default='numnodes', help='Metric for KG-based recommendation')
+    arg_p.add_argument('Profiles', metavar='profiles', type=str, default=[], nargs='+', help='Space-separated user-profile KG files (*.ttl)')
 
     args = arg_p.parse_args(args[1:])
     catalog = args.Catalog
@@ -35,48 +35,63 @@ def main(args):
         print('No catalog KG provided.')
         exit(1)
 
-    profile = args.Profile
+    profiles = args.Profiles
 
-    if profile is None:
+    if profiles is None:
         print('No user-profile KG provided.')
         exit(1)
 
-    catalogKG = loadKG(catalog)
-    userProfileKG = loadKG(profile)
+    metrics = args.metrics
+
+    if metrics is None:
+        print('No metric provided.')
+        exit(1)
+
+    metrics = metrics.split(',')
 
     cfg = Config()
     predicateTypes = cfg.getPredicateTypes()
     recommendableType = URIRef(cfg.getRecommendableType())
     extraMetadata = cfg.getExtraMetadataTypes()
 
-    nodes = getApplicableNodes(userProfileKG, predicateTypes)
-    processed_recommendables = dict()
-    for n in nodes:
-        recommendables = getRecommendables(catalogKG, userProfileKG, n, recommendableType)
-        for r in recommendables:
-            if r in processed_recommendables:
-                print(f'Skipping already-processed {r}')
-                continue
+    catalogKG = loadKG(catalog)
 
-            updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
-            processed_recommendables[r] = computeMetric(updatedUserProfileKG, r, args.metric)
+    for profile in profiles:
+        userProfileKG = loadKG(profile)
 
-    # Sort: More relevant first
-    recos = dict(sorted(processed_recommendables.items(), key=lambda item: item[1], reverse=True))
+        nodes = getApplicableNodes(userProfileKG, predicateTypes)
+        processed_recommendables = dict()
+        for n in nodes:
+            recommendables = getRecommendables(catalogKG, userProfileKG, n, recommendableType)
+            for r in recommendables:
+                if r in processed_recommendables:
+                    print(f'Skipping already-processed {r}')
+                    continue
 
-    # Save to file
-    profile_dir = os.path.dirname(profile)
-    output_dir = os.path.join(profile_dir, 'recos')
-    Path(output_dir).mkdir(parents=True, exist_ok=True) # Create if not exists
+                updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
+                metrics_for_recommendable = dict()
+                for m in metrics:
+                    metrics_for_recommendable[m] = computeMetric(updatedUserProfileKG, r, m)
+                processed_recommendables[r] = metrics_for_recommendable
 
-    output_filename = os.path.join(output_dir, f'{args.metric}.txt')
-    open(output_filename, 'w').close() # Clean if exists
+        for m in metrics:
+            # Sort: More relevant first
+            recos = dict(sorted(processed_recommendables.items(), key=lambda item: item[1][m], reverse=True))
 
-    with open(output_filename, 'a') as output_file:
-        for k, v in recos.items():
-            output_file.write(f'{k}\t{v}\n')
+            # Save to file
+            profile_dir = os.path.dirname(profile)
+            profile_filename = Path(profile).stem # Remove path and extension
+            output_dir = os.path.join(profile_dir, f'recos_{profile_filename}')
+            Path(output_dir).mkdir(parents=True, exist_ok=True) # Create if not exists
 
-    print(f'Stored it as {output_filename}')
+            output_filename = os.path.join(output_dir, f'{m}.txt')
+            open(output_filename, 'w').close() # Clean if exists
+
+            with open(output_filename, 'a') as output_file:
+                for k, v in recos.items():
+                    output_file.write(f'{k}\t{v[m]}\n')
+
+            print(f'Stored it as {output_filename}')
 
 if __name__ == '__main__':
     exit(main(argv))

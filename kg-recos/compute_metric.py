@@ -1,7 +1,7 @@
 import networkx as nx
 
 from argparse import ArgumentParser
-from rdflib.extras.external_graph_libs import rdflib_to_networkx_multidigraph
+from rdflib.extras.external_graph_libs import rdflib_to_networkx_digraph
 from sys import argv
 
 from get_recommendables import loadKG
@@ -9,8 +9,14 @@ from get_recommendables import loadKG
 def computeMetric(kg, node, metric):
     print(f'Computing {metric} ...')
 
-    nx_kg = rdflib_to_networkx_multidigraph(kg)
+    nx_kg = rdflib_to_networkx_digraph(kg)
 
+    if 'betweenness' == metric:
+        computed = nx.betweenness_centrality(nx_kg)
+        return computed[node]
+    if 'closeness' == metric:
+        computed = nx.closeness_centrality(nx_kg)
+        return computed[node]
     if 'in_degree' == metric:
         computed = nx.in_degree_centrality(nx_kg)
         return computed[node]
