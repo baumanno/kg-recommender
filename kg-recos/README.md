@@ -9,13 +9,13 @@ Run the python script as described below. The metrics param (-m) takes a comma-s
 ### Instructions
 
 ```bash
-$ python3 recommend.py -m [metric1,metric2,...] [catalog file KG (*.ttl)] [user profile KG file (*.ttl)] <user profile KG file (*.ttl)> ...
+$ python3 recommend.py -m [metric1,metric2,...] <-r [external recommendation list file]> [catalog file KG (*.ttl)] [user profile KG file (*.ttl)] <user profile KG file (*.ttl)> ...
 ```
-The recommendation list will be output to a text file.
+The generated recommendation list will be output to a text file.
 
 Example:
 ```bash
-$ python3 recommend.py -m closeness,degree catalog.ttl user-profile01.ttl userprofile02.ttl userprofile03.ttl
+$ python3 recommend.py -m closeness,degree catalog.ttl -r external_recommendations.txt user_profile01.ttl user_profile02.ttl user_profile03.ttl
 ```
 
 ### Help
