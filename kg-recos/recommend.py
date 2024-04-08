@@ -84,7 +84,7 @@ def main(args):
                     updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
                     metrics_for_recommendable = dict()
                     for m in metrics:
-                        metrics_for_recommendable[m] = computeMetric(updatedUserProfileKG, r, m)
+                        metrics_for_recommendable[m] = computeMetric(updatedUserProfileKG, m)
                     processed_recommendables[r] = metrics_for_recommendable
 
         else: # use external recommendables
@@ -92,7 +92,7 @@ def main(args):
                 updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
                 metrics_for_recommendable = dict()
                 for m in metrics:
-                    metrics_for_recommendable[m] = computeMetric(updatedUserProfileKG, r, m)
+                    metrics_for_recommendable[m] = computeMetric(updatedUserProfileKG, m)
                 processed_recommendables[r] = metrics_for_recommendable
 
         for m in metrics:
