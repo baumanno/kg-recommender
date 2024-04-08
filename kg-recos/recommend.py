@@ -53,11 +53,17 @@ def main(args):
     if recommendablesFile is None:
         print('No recommendables list provided. Will build our own.')
     else:
-        externalRecommendables = list()
+        print('Parsing external recommendables list ...')
+        externalRecommendables = dict()
         with open(recommendablesFile, 'r') as recsFile:
             for line in recsFile:
-                externalRecommendables.append(URIRef(line.strip()))
-
+                contents = line.strip().split(' ')
+                if contents[0] in externalRecommendables:
+                    lst = externalRecommendables[contents[0]]
+                    lst.append(URIRef(contents[1]))
+                    externalRecommendables[contents[0]] = lst
+                else:
+                    externalRecommendables[contents[0]] = [URIRef(contents[1])]
 
     cfg = Config()
     predicateTypes = cfg.getPredicateTypes()
@@ -88,7 +94,7 @@ def main(args):
                     processed_recommendables[r] = metrics_for_recommendable
 
         else: # use external recommendables
-            for r in externalRecommendables:
+            for r in externalRecommendables[Path(profile).stem]:
                 updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
                 metrics_for_recommendable = dict()
                 for m in metrics:
