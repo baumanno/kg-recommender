@@ -95,6 +95,10 @@ def main(args):
 
         else: # use external recommendables
             for r in externalRecommendables[Path(profile).stem]:
+                if (r, None, None) in userProfileKG or (None, None, r) in userProfileKG:
+                    print(f'Skipping already-existing node {r}')
+                    continue
+
                 updatedUserProfileKG = addNeighbors(catalogKG, userProfileKG, r, extraMetadata)
                 metrics_for_recommendable = dict()
                 for m in metrics:
