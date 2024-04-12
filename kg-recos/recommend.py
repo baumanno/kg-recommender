@@ -112,7 +112,8 @@ def main(args):
             # Save to file
             profile_dir = os.path.dirname(profile)
             profile_filename = Path(profile).stem # Remove path and extension
-            output_dir = os.path.join(profile_dir, f'recos_{profile_filename}')
+            output_dir = os.path.join(profile_dir, 'recos')
+            output_dir = os.path.join(output_dir, f'{profile_filename}')
             Path(output_dir).mkdir(parents=True, exist_ok=True) # Create if not exists
 
             output_filename = os.path.join(output_dir, f'{m}.txt')
