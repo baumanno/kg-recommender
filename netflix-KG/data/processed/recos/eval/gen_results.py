@@ -31,12 +31,13 @@ def main(args):
                 metric_recs_file = os.path.join(d, f'{metric}.txt')
                 with open(metric_recs_file, 'r') as f:
                     rank = 0
+                    score = 8808 # num. of nodes in the catalog
                     for line in f:
                         contents = line.strip().split()
                         documentid = contents[0]
-                        score = contents[1]
+
                         rank += 1
-                    
+                        score -= 1
                         out_line = f'{queryid} Q0 {documentid} {rank} {score} {metric.upper()}'
                         out.write(f'{out_line}\n')
                         print(out_line)

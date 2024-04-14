@@ -22,7 +22,9 @@ with open('../external_recos.txt', 'r') as f:
 
             uri = URIRef(documentid)
             if (uri, None, None) in kg or (None, None, uri) in kg:
-                print(f'Skipping already-existing {documentid} in {current_kg_file}')
+                out_line = f'{queryid} Q0 {documentid} 0' # already-existing documentids are non-relevant
+                out.write(f'{out_line}\n')
+                print(out_line)
                 continue
 
             rank -= 1
