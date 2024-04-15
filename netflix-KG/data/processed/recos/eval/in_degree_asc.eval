@@ -1,0 +1,11 @@
+ndcg_cut_5            	all	0.4007
+ndcg_cut_10           	all	0.4043
+ndcg_cut_20           	all	0.4178
+ndcg_cut_50           	all	0.4369
+ndcg_cut_100          	all	0.4448
+ndcg_cut_200          	all	0.4527
+ndcg_cut_500          	all	0.4684
+ndcg_cut_1000         	all	0.4893
+ndcg_cut_2000         	all	0.5301
+ndcg_cut_5000         	all	0.6646
+ndcg_cut_10000        	all	0.9243

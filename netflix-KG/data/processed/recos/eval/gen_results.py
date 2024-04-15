@@ -7,6 +7,7 @@ from sys import argv
 def main(args):
     arg_p = ArgumentParser('python gen_results.py', description='Generates TREC_EVAL results file')
     arg_p.add_argument('-m', '--metrics', type=str, default=None, help='Comma-separated metric list (e.g. \'degree,eigenvector,betweenness\').')
+    arg_p.add_argument('-r', '--reverse', action='store_true', help='Revert the relevance order')
 
     args = arg_p.parse_args(args[1:])
 
@@ -17,6 +18,8 @@ def main(args):
 
     metrics = metrics.split(',')
 
+    reverseSort = args.reverse
+
     for metric in metrics:
         output_filename = f'{metric}.results.test'
         open(output_filename, 'w').close() # Clean if exists
@@ -24,12 +27,15 @@ def main(args):
         with open(output_filename, 'a') as out:
             dirs = [d[0] for d in os.walk("..")]
             for d in sorted(dirs):
-                if d == '..' or d == '../eval':
+                if d == '..' or d == '../eval' or d == '../eval/plots':
                     continue
 
                 queryid = Path(d).stem
                 metric_recs_file = os.path.join(d, f'{metric}.txt')
                 with open(metric_recs_file, 'r') as f:
+                    if reverseSort:
+                        f = reverse(list(f))
+
                     rank = 0
                     score = 8808 # num. of nodes in the catalog
                     for line in f:
