@@ -223,6 +223,9 @@ lastfm-KG/data/processed/*.ttl
 lastfm-KG/data/processed/recos/
 lastfm-KG/data/processed/subkgs/
 
+lastfm-KG/data/processed/eval/*
+!lastfm-KG/data/processed/eval/*.xz
+
 # ignore everything in tmp
 lastfm-KG/data/tmp/
 
