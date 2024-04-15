@@ -34,7 +34,7 @@ def main(args):
                 metric_recs_file = os.path.join(d, f'{metric}.txt')
                 with open(metric_recs_file, 'r') as f:
                     if reverseSort:
-                        f = reverse(list(f))
+                        f = reversed(list(f))
 
                     rank = 0
                     score = 8808 # num. of nodes in the catalog
