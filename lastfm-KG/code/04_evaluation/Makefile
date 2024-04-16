@@ -9,7 +9,7 @@ SHELL := bash
 MAKEFLAGS += --warn-undefined-variables
 MAKEFLAGS += --no-builtin-rules
 
-PROJECT_ROOT ?= ../../..
+PROJECT_ROOT ?= ../..
 DATADIR ?= ../../data
 PROCESSED := $(DATADIR)/processed
 TMP := $(DATADIR)/tmp

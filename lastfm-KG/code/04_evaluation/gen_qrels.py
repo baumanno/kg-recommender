@@ -22,7 +22,9 @@ def run(reco_dir: pathlib.Path, out: pathlib.Path) -> int:
     logger.info(f"Reading reference-recos from {reco_dir}")
 
     data: list[QrelLine] = []
-    for user_recos in reco_dir.glob("*.csv"):
+    for i, user_recos in enumerate(reco_dir.glob("*.csv")):
+
+        logger.info(f"Processing user {i} of 1000")
 
         with open(user_recos, "r", newline="") as f:
             reader = csv.DictReader(f, fieldnames=next(f).strip().split(","))
