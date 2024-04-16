@@ -227,7 +227,10 @@ lastfm-KG/data/processed/eval/*
 !lastfm-KG/data/processed/eval/*.xz
 
 # ignore everything in tmp
-lastfm-KG/data/tmp/
+lastfm-KG/data/tmp/*
+!lastfm-KG/data/tmp/.gitkeep
+netflix-KG/data/tmp/*
+!netflix-KG/data/tmp/.gitkeep
 
 # ignore evaluated algorithm
 lastfm-KG/code/02_recos/algo.out
