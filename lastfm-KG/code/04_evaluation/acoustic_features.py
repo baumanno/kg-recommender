@@ -33,6 +33,7 @@ def run(
     reranked_reco_files: list[pathlib.Path],
     base_reco_dir: pathlib.Path,
     track_features_file: pathlib.Path,
+    out_dir: pathlib.Path,
 ) -> int:
 
     logger = logging.getLogger(__name__)
@@ -139,7 +140,7 @@ def run(
             unexp = unexpectedness(profile_features[user], vectors)
             measures_unexpectedness += f"unexpectedness,{metric},{user},{unexp}\n"
 
-    logger.info("Computing measures for profiles")
+    logger.info("Computing diversity for profiles")
 
     for user, vectors in profile_features.items():
         div = diversity(vectors)
@@ -147,11 +148,11 @@ def run(
 
     logger.info("Writing output files")
 
-    with open("diversity.csv", "w") as f:
+    with open(out_dir / "diversity.csv", "w") as f:
         f.write("measure,metric,user_id,value\n")
         f.writelines(measures_diversity)
 
-    with open("unexpectedness.csv", "w") as f:
+    with open(out_dir / "unexpectedness.csv", "w") as f:
         f.write("measure,metric,user_id,value\n")
         f.writelines(measures_unexpectedness)
 
@@ -169,6 +170,9 @@ if __name__ == "__main__":
     parser.add_argument("--reranked-recos", type=pathlib.Path, nargs="+")
     parser.add_argument("--base-reco-dir", type=pathlib.Path)
     parser.add_argument("--track-features", type=pathlib.Path)
+    parser.add_argument(
+        "--out-dir", type=pathlib.Path, help="Directory to write outputs to"
+    )
 
     args = parser.parse_args()
 
@@ -178,5 +182,6 @@ if __name__ == "__main__":
             args.reranked_recos,
             args.base_reco_dir,
             args.track_features,
+            args.out_dir,
         )
     )

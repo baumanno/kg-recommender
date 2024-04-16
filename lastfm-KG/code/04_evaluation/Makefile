@@ -34,22 +34,25 @@ help: ## Display this help section
 
 
 ALL_BASE := $(shell find $(PROCESSED)/eval -type f -name "*.res" -exec basename {} \;)
+RESULTS_FILES := $(addprefix $(PROCESSED)/eval/,$(ALL_BASE))
 ALL_BASE := $(subst .res,, $(ALL_BASE))
 
 ALL_RESULTS := $(addsuffix .results.test,$(ALL_BASE))
 ALL_RESULTS := $(addprefix $(PROCESSED)/eval/,$(ALL_RESULTS))
 
-
 NDCG_RESULTS := $(addsuffix .ndcg.result,$(ALL_BASE))
 NDCG_RESULTS := $(addprefix $(PROCESSED)/eval/,$(NDCG_RESULTS))
 
-# TREC_CUTLEVELS :=  5 10 15 20 30 100 200 500 1000
-# PLOT_NAMES := $(addsuffix .pdf,$(TREC_CUTLEVELS))
-# PLOT_NAMES := $(addprefix $(PROCESSED)/res/ndcg_cut_,$(PLOT_NAMES))
-PLOT_NAMES := $(PROCESSED)/res/ndcg_cut_%.pdf
+PLOT_DIR := $(PROJECT_ROOT)/viz
+
+TREC_LEVELS := 5 10 15 20 30 100 200 500 1000
+NDCG_PLOTS := $(foreach level,$(TREC_LEVELS),$(subst LEVEL,$(level),$(PLOT_DIR)/lastfm_ndcg_cut_LEVEL.pdf))
+
+SURPRISE_PLOTS := diversity.pdf unexpectedness.pdf
+SURPRISE_PLOTS := $(addprefix $(PLOT_DIR)/,$(SURPRISE_PLOTS))
 
 .PHONY: all
-all: $(NDCG_RESULTS) $(PLOT_NAMES)
+all: $(NDCG_RESULTS) $(NDCG_PLOTS) $(SURPRISE_PLOTS) $(PROCESSED)/diversity.csv $(PROCESSED)/unexpectedness.csv
 
 $(PROCESSED)/eval/qrels.test: $(TMP)/recos
 	$(py) gen_qrels.py \
@@ -69,8 +72,18 @@ $(NDCG_RESULTS): $(PROCESSED)/eval/%.ndcg.result: $(PROCESSED)/eval/%.results.te
 		$< \
 	| tail -n 9 > $@
 
-$(PLOT_NAMES): $(NDCG_RESULTS)
+$(NDCG_PLOTS) &: $(NDCG_RESULTS)
 	Rscript -e 'renv::run("./01_eval_ndcg.R")'
 
+$(PROCESSED)/diversity.csv $(PROCESSED)/unexpectedness.csv &: $(RESULTS_FILES)
+	$(py) acoustic_features.py \
+		--user-profile-dir=$(TMP) \
+		--reranked-recos $(PROCESSED)/eval/*.res \
+		--base-reco-dir=$(TMP)/recos \
+		--track-features=$(PROCESSED)/tracks_with_features.csv \
+		--out-dir=$(PROCESSED)
+
+$(SURPRISE_PLOTS) &: $(PROCESSED)/diversity.csv $(PROCESSED)/unexpectedness.csv
+	Rscript -e 'renv::run("./02_eval_surprise.R")'
 
 # end
