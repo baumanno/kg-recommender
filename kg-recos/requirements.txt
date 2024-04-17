@@ -1,4 +1,0 @@
-concentrationMetrics==0.6.0
-networkx==2.5
-numpy==1.19.4
-rdflib==5.0.0
